@@ -3,7 +3,7 @@
 
 Sebuah sistem Smart Home berbasis web dengan Flask, terintegrasi dengan perangkat keras (seperti ESP32) untuk monitoring sensor, kontrol pintu, dan keamanan.
 
-![Contoh Screenshot Dashboard](https://via.placeholder.com/800x400.png?text=Screenshot+Dashboard+Anda+di+Sini)
+![Contoh Screenshot Dashboard](https://github.com/user-attachments/assets/e68752cf-6097-41d5-8ebe-6fbfd44789e6)
 
 ## 🌟 Fitur Utama
 
