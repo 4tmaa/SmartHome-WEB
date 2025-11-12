@@ -1,3 +1,15 @@
+#JANGAN LUPA ISI KOLOM YANG KOSONG
+# app.config['MAIL_USERNAME'] = '' 
+# app.config['MAIL_PASSWORD'] = ''  
+
+# database=" "
+
+# app.config['SECRET_KEY'] = ' '
+
+# sender=' @gmail.com',
+
+# local_flask_url = " "
+
 from flask import Flask, render_template, request, redirect, url_for, flash, session, make_response, jsonify
 from flask_mail import Mail, Message
 import mysql.connector
@@ -11,7 +23,7 @@ import os
 import requests
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'your_secret_key'
+app.config['SECRET_KEY'] = ' '
 
 # Set the folder to store uploaded images
 UPLOAD_FOLDER = 'SmartHome/static/uploads'
@@ -34,7 +46,7 @@ def get_db_connection():
         host="localhost",       # Atau "127.0.0.1"
         user="root",            # User default untuk XAMPP/MAMP
         password="",            # Password default XAMPP/MAMP biasanya kosong
-        database="SmartHome"  # Sesuaikan jika nama database lokal Anda berbeda
+        database=""  # Sesuaikan jika nama database lokal Anda berbeda
     )
 
 # Routes
@@ -376,7 +388,7 @@ def receive_failed_attempt():
     # Jika event_type adalah "keypad" dan status adalah "failed", kirim data ke Flask Lokal
     if access_type == 'keypad' and status == 'failed':
         # Kirim data percobaan gagal ke Flask Lokal
-        local_flask_url = " https://3cd23cfbf922.ngrok-free.app/receive-failed-attempt"  # Ganti dengan alamat Flask Lokal yang benar
+        local_flask_url = " (isi sendiri)"  # Ganti dengan alamat Flask Lokal yang benar
 
         # Menggunakan `requests` untuk mengirim data ke Flask Lokal
         response = requests.post(local_flask_url, json=data)
@@ -1090,7 +1102,7 @@ def change_password():
 def send_reset_email(to_email, reset_link):
     msg = Message(
         'IoT Smart Home - Reset Password Request',
-        sender='dikymulyaatmaja@gmail.com',  # Ganti dengan email pengirim yang valid
+        sender=' ',  # Ganti dengan email pengirim yang valid
         recipients=[to_email]  # Alamat email penerima
     )
     msg.body = f'Click the link below to reset your password:\n{reset_link}'
