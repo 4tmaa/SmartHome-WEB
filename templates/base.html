@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Smart Home Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <script>
+    function toggleDropdown(id) {
+      var dropdown = document.getElementById(id);
+      dropdown.classList.toggle('hidden');
+    }
+  </script>
+  <style>
+    body {
+        background-color: #ffffff; /* Warna background utama */
+        color: #e5e7eb; /* Warna teks terang */
+        font-family: 'Inter', sans-serif;
+        background-image: url("{{ url_for('static', filename='images/bg-index.jpg') }}"); /* Latar belakang gambar */
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;  /* Menjaga background tetap saat halaman di-scroll */
+    }
+
+
+    /* Scrollbar fix for sidebar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background-color: #4b5563;
+      border-radius: 6px;
+    }
+
+    .card {
+      background: #1e1e1e;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgb(255 255 255 / 0.05);
+    }
+
+    /* Custom shadows for elevated effect */
+    .shadow-dark {
+      box-shadow: 0 10px 15px -3px rgb(255 255 255 / 0.05), 0 4px 6px -4px rgb(255 255 255 / 0.04);
+    }
+
+    /* Search bar */
+    .search-input {
+      background-color: #222222;
+      color: #d1d5db;
+      padding-left: 2.5rem;
+      border-radius: 9999px;
+      border: none;
+      height: 2.5rem;
+      transition: background-color 0.3s;
+    }
+
+    .search-input::placeholder {
+      color: #6b7280;
+    }
+
+    .search-input:focus {
+      outline: none;
+      background-color: #333333;
+    }
+
+    .notification-badge {
+      background-color: #ef4444;
+      width: 12px;
+      height: 12px;
+      border-radius: 9999px;
+      border: 2px solid #0e0e0e;
+      position: absolute;
+      top: 1px;
+      right: 1px;
+    }
+
+    .dropdown {
+      position: relative;
+      display: inline-block;
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      left: 100%;
+      top: 0;
+      background-color: #171717;
+      min-width: 200px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      z-index: 1;
+    }
+
+    .dropdown-content a {
+      padding: 8px 16px;
+      color: #d1d5db;
+      text-decoration: none;
+      display: block;
+    }
+
+    .dropdown-content a:hover {
+      background-color: #3b82f6bb;
+      color: white;
+    }
+
+    .dropdown:hover .dropdown-content {
+      display: block;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      margin-bottom: 12px;
+      font-size: 16px;
+    }
+
+    .nav-item i {
+      margin-right: 8px;
+    }
+
+    /* Navbar container that is centered */
+    .navbar {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .navbar-items {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+    }
+  </style>
+</head>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ url_for('static', filename='js/chart.js') }}"></script>
+
+<body class="min-h-screen flex">
+  <!-- Sidebar -->
+  <aside class="flex flex-col bg-[#171717] w-20 md:w-52 p-5 space-y-8">
+    <div>
+      <div class="font-extrabold text-white text-xl mb-7 tracking-wide select-none">Smart Home</div>
+      <div class="overflow-hidden rounded-2xl border-[3px] border-gray-600">
+        <img src="{{ url_for('static', filename='images/logo1.png') }}" alt="Logo Kelompok Icikiwir" class="w-full object-cover aspect-[16/9]" />
+      </div>
+    </div>
+
+    <!-- Centered Navbar -->
+    <div class="navbar">
+      <nav class="navbar-items">
+        <!-- Home -->
+        <a href="{{ url_for('index') }}" class="nav-item text-white hover:bg-[#3b82f6bb] transition">
+          <i class="fas fa-home h-6 w-6 shrink-0"></i>
+                Home
+        </a>
+
+        <!-- Access Control Dropdown -->
+        <div class="dropdown">
+          <button class="nav-item text-gray-400 hover:bg-white/10 hover:text-white transition">
+            <i class="fas fa-door-open h-6 w-6 shrink-0"></i>
+                Access Control
+          </button>
+          <div class="dropdown-content">
+            <a href="{{ url_for('web_user_management') }}">User Management</a>
+            <a href="{{ url_for('access_logs') }}">Access Logs</a>
+            <a href="{{ url_for('failed_attempts') }}">Failed Attempts</a>
+          </div>
+        </div>
+
+        <!-- Sensor Data Dropdown -->
+        <div class="dropdown">
+          <button class="nav-item text-gray-400 hover:bg-white/10 hover:text-white transition">
+            <i class="fas fa-chart-line h-6 w-6 shrink-0"></i>
+               Sensor Data
+          </button>
+          <div class="dropdown-content">
+            <a href="{{ url_for('temperature_logs') }}">Temperature/Humidity</a>
+            <a href="{{ url_for('light_logs') }}">Light Status</a>
+          </div>
+        </div>
+
+        <!-- Smart Automation Dropdown -->
+        <div class="dropdown">
+          <button class="nav-item text-gray-400 hover:bg-white/10 hover:text-white transition">
+            <i class="fas fa-robot h-6 w-6 shrink-0"></i>
+               Smart Automation
+          </button>
+          <div class="dropdown-content">
+            <a href="{{ url_for('light_rules') }}">Light Rules</a>
+          </div>
+        </div>
+
+        <!-- Notifications -->
+        <a href="{{ url_for('notifications') }}" class="nav-item text-gray-400 hover:bg-white/10 hover:text-white transition">
+          <i class="fas fa-bell h-6 w-6 shrink-0"></i>
+              Notifications
+        </a>
+
+        <!-- System Dropdown -->
+        <div class="dropdown">
+          <button class="nav-item text-gray-400 hover:bg-white/10 hover:text-white transition">
+            <i class="fas fa-cog h-6 w-6 shrink-0"></i>
+                System
+          </button>
+          <div class="dropdown-content">
+            <a href="{{ url_for('reset_pin') }}">Device Management</a>
+          </div>
+        </div>
+
+        <!-- User Profile Dropdown -->
+        <div class="dropdown">
+          <button class="nav-item text-gray-400 hover:bg-white/10 hover:text-white transition">
+            <i class="fas fa-user h-6 w-6 shrink-0"></i>
+            {% if session.get('username') %}
+              {{ session['username'] }} <!-- Tampilkan username jika sudah login -->
+            {% else %}
+                  Guest <!-- Tampilkan "Guest" jika belum login -->
+            {% endif %}
+          </button>
+          <div class="dropdown-content">
+            {% if session.get('username') %}
+              <a href="{{ url_for('logout') }}">Logout</a> <!-- Tampilkan "Logout" jika sudah login -->
+            {% else %}
+              <a href="{{ url_for('login') }}">Login</a>
+              <a href="{{ url_for('change_password') }}">Change Password</a>
+              <a href="{{ url_for('registration') }}">Registration</a>
+            {% endif %}
+          </div>
+        </div>
+      </nav>
+    </div>
+  </aside>
+
+  <!-- Main content area -->
+  <main class="flex-1 p-8 max-w-full overflow-y-auto">
+    {% block content %}
+    {% endblock %}
+  </main>
+  
+  <!-- Tautkan file JavaScript eksternal -->
+  <script src="{{ url_for('static', filename='js/updateTime.js') }}"></script>
+</body>
+
+</html>

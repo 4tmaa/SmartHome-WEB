@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="card p-6 shadow-lg rounded-xl">
+  <h2 class="font-semibold text-2xl text-white mb-4">User Management</h2>
+
+  {% if message %}
+    <div class="bg-red-500 text-white p-4 rounded-md mb-4">
+      {{ message }}
+    </div>
+  {% endif %}
+
+  {% if user_role == 'guest' %}
+    <div class="bg-gray-800 text-white p-4 rounded-md mb-4">
+      <p class="text-center">You do not have permission to view or modify the data. <a href="{{ url_for('login') }}" class="text-blue-400 hover:text-blue-600">Click here to login</a></p>
+    </div>
+  {% else %}
+    <table class="min-w-full mt-4 table-auto bg-gray-900">
+      <thead>
+        <tr class="text-white">
+          <th class="py-2 px-4 border-b">ID</th>
+          <th class="py-2 px-4 border-b">Name</th>
+          <th class="py-2 px-4 border-b">Access Level</th>
+          <th class="py-2 px-4 border-b">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="text-gray-100">
+        {% for user in users %}
+        <tr class="bg-gray-100 dark:bg-gray-700 hover:bg-gray-900 text-center">
+          <td class="py-2 px-4 border-b">{{ user.web_user_id }}</td>
+          <td class="py-2 px-4 border-b">{{ user.username }}</td>
+          <td class="py-2 px-4 border-b">{{ user.role }}</td>
+          <td class="py-2 px-4 border-b">
+            {% if user_role == 'admin' %}
+              <a href="{{ url_for('update_user', user_id=user.web_user_id) }}" class="text-blue-400 hover:text-blue-600">Edit</a>
+              <a href="{{ url_for('delete_user', user_id=user.web_user_id) }}" class="text-red-400 hover:text-red-600 ml-4">Delete</a>
+            {% elif user_role == 'user' %}
+              <span class="text-gray-500">No actions available</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+</div>
+{% endblock %}

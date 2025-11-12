@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="card p-6 shadow-lg rounded-xl">
+  <h2 class="font-semibold text-2xl text-white mb-4">Update {{ status.capitalize() }} Time</h2>
+
+  <!-- Formulir Update Time -->
+  <form action="{{ url_for('update_light_time', status=status) }}" method="POST">
+    <div>
+      <label for="time" class="block text-sm font-semibold text-white">Time:</label>
+      <!-- Pastikan nilai waktu lama ditampilkan di input -->
+      <input type="time" name="time" value="{{ light_schedule['time'] }}" class="w-full p-2 rounded bg-gray-700" required>
+    </div>
+
+    <div class="mt-4">
+      <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600">Update</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

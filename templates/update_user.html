@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="flex items-center justify-center min-h-screen">
+    <div class="card p-8 shadow-lg rounded-xl  w-full max-w-lg">
+        <h1 class="text-2xl font-semibold text-white mb-6 text-center">Update User: {{ user.username }}</h1>
+
+        <!-- Formulir Update User -->
+        <form action="{{ url_for('update_user', user_id=user.web_user_id) }}" method="POST" class="space-y-4">
+            <!-- Username Input -->
+            <div class="mb-4">
+                <label for="username" class="block text-white">Username:</label>
+                <input type="text" name="username" class="form-control bg-gray-700 text-white rounded-md p-2 w-full" value="{{ user.username }}" required>
+            </div>
+
+            <!-- Role Dropdown -->
+            <div class="mb-4">
+                <label for="role" class="block text-white">Access Level:</label>
+                <select name="role" class="form-select bg-gray-700 text-white rounded-md p-2 w-full">
+                    <option value="admin" {% if user.role == 'admin' %}selected{% endif %}>Admin</option>
+                    <option value="user" {% if user.role == 'user' %}selected{% endif %}>User</option>
+                </select>
+            </div>
+            
+            <!-- Submit Button -->
+            <div class="mb-4">
+                <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600">Update User</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

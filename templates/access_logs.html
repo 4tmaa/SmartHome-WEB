@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="card p-6 shadow-lg rounded-xl">
+  <h2 class="font-semibold text-2xl text-white mb-4">Access Logs</h2>
+
+  {% if message %}
+    <div class="bg-red-500 text-white p-4 rounded-md mb-4">
+      {{ message }}
+    </div>
+  {% endif %}
+
+  {% if user_role == 'guest' %}
+    <div class="bg-gray-700 text-white p-4 rounded-md mb-4">
+      <p class="text-center">You do not have permission to view the access logs. <a href="{{ url_for('login') }}" class="text-blue-400 hover:text-blue-600">Click here to login</a></p>
+    </div>
+  {% else %}
+    <!-- Access Logs Table -->
+    <table class="min-w-full mt-4">
+      <thead>
+        <tr class="text-center bg-gray-900">
+          <th class="py-2 px-4 border-b">Log ID</th>
+          <th class="py-2 px-4 border-b">Username</th>
+          <th class="py-2 px-4 border-b">Access Time</th>
+          <th class="py-2 px-4 border-b">Access Type</th>
+          <th class="py-2 px-4 border-b">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for log in logs %}
+        {% if log.status == 'success' %}
+        <tr class="text-center bg-gray-100 dark:bg-gray-700 hover:bg-gray-900">
+          <td class="py-2 px-4 border-b">{{ log.log_id }}</td>
+          <td class="py-2 px-4 border-b">{{ log.username }}</td>
+          <td class="py-2 px-4 border-b">{{ log.access_time.strftime('%d-%m-%Y %H:%M WIB') }}</td>
+          <td class="py-2 px-4 border-b">{{ log.access_type }}</td>
+          <td class="py-2 px-4 border-b">{{ log.status }}</td>
+        </tr>
+        {% endif %}
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <div class="mt-4 flex justify-between items-center">
+      <div>
+      {% if page > 1 %}
+          <a href="{{ url_for('access_logs', page=page-1) }}" class="font-bold text-blue-900 hover:text-blue-600">Previous</a>
+      {% else %}
+          <span class="text-gray-300 font-bold">Previous</span>
+      {% endif %}
+      </div>
+
+      <div class="text-center text-white">
+          <a href="{{ url_for('access_logs', page=1) }}" class="text-blue-400 font-bold">First</a>
+          Page {{ page }} of {{ total_pages }}
+          <a href="{{ url_for('access_logs', page=total_pages) }}" class="text-red-400 font-bold">Last</a>
+      </div>
+
+      <div>
+      {% if page < total_pages %}
+          <a href="{{ url_for('access_logs', page=page+1) }}" class="text-blue-400 hover:text-blue-600 font-bold">Next</a>
+      {% else %}
+          <span class="text-gray-300 font-bold">Next</span>
+      {% endif %}
+      </div>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

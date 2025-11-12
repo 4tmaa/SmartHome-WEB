@@ -1,0 +1,27 @@
+# Virtual Environment (Folder venv/ Anda)
+venv/
+*.venv
+env/
+/env.bak/
+/venv.bak/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# File environment (SANGAT PENTING, berisi password)
+.env
+*.env
+.flaskenv
+
+# Folder instance Flask (bisa berisi config/DB rahasia)
+instance/
+
+# Database lokal
+*.sqlite
+*.sqlite3
+*.db
+*.db-journal
+
+# Log files
+*.log

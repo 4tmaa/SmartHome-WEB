@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-xl mx-auto p-6 rounded mt-6">
+
+  <h2 class="text-xl font-semibold mb-4">Detail Failed Attempt</h2>
+
+  <img src="{{ url_for('static', filename='uploads/' + attempt.filepath.split('/')[-1]) }}" alt="Attempt Image" class="w-full mb-4 rounded shadow">
+
+  <p><strong>Event Type:</strong> {{ attempt.event_type }}</p>
+  <p><strong>Timestamp:</strong> {{ attempt.timestamp.strftime('%d-%m-%Y %H:%M WIB') }}</p>
+
+  <p><strong>Total Wajah Terdeteksi:</strong> {{ attempt.face_count or 'Tidak ada' }}</p>
+
+  {% if attempt.age or attempt.gender %}
+  <div class="mt-4">
+    <p class="font-semibold">Detail wajah utama:</p>
+    <p><strong>Age:</strong> {{ attempt.age or 'Unknown' }}</p>
+    <p><strong>Gender:</strong> {{ attempt.gender or 'Unknown' }}</p>
+  </div>
+{% endif %}
+
+
+  <a href="{{ url_for('failed_attempts') }}" class="inline-block mt-6 text-blue-500 hover:underline">← Back to list</a>
+</div>
+{% endblock %}

@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="card p-6 shadow-lg rounded-xl">
+  <h2 class="font-semibold text-2xl text-white mb-4">Failed Attempts</h2>
+
+  {% if message %}
+    <div class="bg-red-500 text-white p-4 rounded-md mb-4">
+      {{ message }}
+    </div>
+  {% endif %}
+
+  {% if user_role != 'admin' %}
+    <div class="bg-gray-700 text-white p-4 rounded-md mb-4">
+      <p class="text-center">You do not have permission to view the failed attempts. <a href="{{ url_for('login') }}" class="text-blue-400 hover:text-blue-600">Click here to login</a></p>
+    </div>
+  
+  {% else %}
+    <table class="min-w-full mt-4 bg-gray-900">
+      <thead>
+        <tr>
+          <th class="py-2 px-4 border-b text-center">Event ID</th>
+          <th class="py-2 px-4 border-b text-center">Event Type</th>
+          <th class="py-2 px-4 border-b text-center">Timestamp</th>
+          <th class="py-2 px-4 border-b text-center">Image</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for attempt in attempts %}
+        <tr class="bg-gray-100 dark:bg-gray-700 hover:bg-gray-900">
+          {% if attempt.access_type %}
+            <td class="py-2 px-4 border-b text-center">{{ attempt.log_id }}</td>
+            <td class="py-2 px-4 border-b text-center">{{ 'Wrong PIN' if attempt.access_type == 'keypad' else 'Wrong UID' }}</td>
+            <td class="py-2 px-4 border-b text-center">
+                {% if attempt.access_time %}
+                    {{ attempt.access_time.strftime('%d-%m-%Y %H:%M WIB') }}
+                {% elif attempt.timestamp %}
+                    {{ attempt.timestamp.strftime('%d-%m-%Y %H:%M WIB') }}
+                {% else %}
+                    Tidak ada waktu
+                {% endif %}
+            </td>
+            <td class="py-2 px-4 border-b text-center">N/A</td> {% else %}
+            <td class="py-2 px-4 border-b text-center">{{ attempt.id }}</td>
+            <td class="py-2 px-4 border-b text-center">{{ attempt.event_type }}</td>
+            <td class="py-2 px-4 border-b text-center">{{ attempt.timestamp.strftime('%d-%m-%Y %H:%M WIB') }}</td>
+            <td class="py-2 px-4 border-b text-center">
+              {% if attempt.filepath %}
+                <a href="{{ url_for('view_attempt', attempt_id=attempt.id) }}">
+                  <button class="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded">
+                    View
+                  </button>
+                </a>
+              {% else %}
+                <p>No image</p>
+              {% endif %}
+            </td>
+          {% endif %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <div class="mt-4 flex justify-between items-center">
+      <div>
+      {% if page > 1 %}
+          <a href="{{ url_for('failed_attempts', page=page-1) }}" class="font-bold text-blue-900 hover:text-blue-600">Previous</a>
+      {% else %}
+          <span class="text-gray-300 font-bold">Previous</span>
+      {% endif %}
+      </div>
+
+      <div class="text-center text-white">
+          <a href="{{ url_for('failed_attempts', page=1) }}" class="text-blue-400 font-bold">First</a>
+          Page {{ page }} of {{ total_pages }}
+          <a href="{{ url_for('failed_attempts', page=total_pages) }}" class="text-red-400 font-bold">Last</a>
+      </div>
+
+      <div>
+      {% if page < total_pages %}
+          <a href="{{ url_for('failed_attempts', page=page+1) }}" class="text-blue-400 hover:text-blue-600 font-bold">Next</a>
+      {% else %}
+          <span class="text-gray-300 font-bold">Next</span>
+      {% endif %}
+      </div>
+    </div>
+
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="text-3xl font-bold text-white mb-4">Temperature and Humidity Logs</h1>
+<div class="p-4 rounded-lg">
+    <table class="min-w-full mt-4 text-sm text-center text-gray-200">
+        <thead>
+            <tr>
+                <th class="px-4 py-2">Date</th>
+                <th class="px-4 py-2 text-left">Temperature (°C)</th>
+                <th class="px-4 py-2 text-left">Humidity (%)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in logs %}
+            <tr>
+                <td class="px-4 py-2 text-left">{{ log.recorded_at.strftime('%d-%m-%Y %H:%M WIB') }}</td>
+                <td class="px-4 py-2 text-left">{{ log.temperature }}°C</td>
+                <td class="px-4 py-2 text-left">{{ log.humidity }}%</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Pagination Controls -->
+    <div class="mt-4 flex justify-between items-center">
+        <div>
+        {% if page > 1 %}
+            <a href="{{ url_for('temperature_logs', page=page-1) }}" class="font-bold text-blue-900 hover:text-blue-600">Previous</a>
+        {% else %}
+            <span class="text-gray-300 font-bold">Previous</span>
+        {% endif %}
+        </div>
+
+        <div class="text-center text-white">
+            <a href="{{ url_for('temperature_logs', page=1) }}" class="text-blue-400 font-bold">First</a>
+            Page {{ page }} of {{ total_pages }}
+            <a href="{{ url_for('temperature_logs', page=total_pages) }}" class="text-red-400 font-bold">Last</a>
+        </div>
+
+        <div>
+        {% if page < total_pages %}
+            <a href="{{ url_for('temperature_logs', page=page+1) }}" class="text-blue-400 hover:text-blue-600 font-bold">Next</a>
+        {% else %}
+            <span class="text-gray-300 font-bold">Next</span>
+        {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

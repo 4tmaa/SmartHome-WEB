@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8 transition-all duration-300">
+    <!-- Header Section with Current Time and Date -->
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="text-4xl font-bold text-gray-300">Welcome to Dashboard {{ user['username'] }}</h1>
+
+        <!-- Calendar Section (Kecil di atas) -->
+        <div class=" text-white p-4 rounded-lg mb-8">
+            <div class="flex justify-between items-center">
+                <!-- Calendar Navigation -->
+                <div class="flex space-x-4">
+                    <span class="calendar-day cursor-pointer hover:text-gray-400">Sun</span>
+                    <span class="calendar-day cursor-pointer hover:text-gray-400">Mon</span>
+                    <span class="calendar-day cursor-pointer hover:text-gray-400">Tue</span>
+                    <span class="calendar-day cursor-pointer hover:text-gray-400">Wed</span>  <!-- Active day will be highlighted -->
+                    <span class="calendar-day cursor-pointer hover:text-gray-400">Thu</span>
+                    <span class="calendar-day cursor-pointer hover:text-gray-400">Fri</span>
+                    <span class="calendar-day cursor-pointer hover:text-gray-400">Sat</span>
+                </div>
+                <div id="date" class="text-sm text-blue-500 month-name">
+                    <!-- Nama bulan dan tahun, akan diupdate oleh JS -->
+                </div>
+            </div>
+            <!-- Display Time -->
+            <div id="current-time">
+                <span id="" class="text-xl"></span><!-- Tanggal dari Flask -->
+                <span id="time" class="text-xl font-semibold">{{ current_time }}</span> <!-- Waktu awal dari Flask -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Section -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+        <!-- Door Status Card -->
+        <!-- Door Status Card - Only visible to user and admin -->
+        {% if user['role'] in ['admin'] %}
+        <div class="text-gray-100 p-6 rounded-lg">
+            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+                {% if door_status == 'locked' %}
+                    🔒 Pintu Terkunci
+                {% else %}
+                    🔓 Pintu Terbuka
+                {% endif %}
+            </h3>
+
+            <form action="/open_gate" method="POST" class="inline">
+                <button type="submit" id="unlock-door" class="bg-blue-600 text-white px-4 py-2 rounded-full"
+                        {% if door_status == 'open' %} disabled {% endif %}>
+                    Buka Pintu
+                </button>
+            </form>
+
+            <form action="/lock_gate" method="POST" class="inline ml-2">
+                <button type="submit" id="lock-door" class="bg-red-600 text-white px-4 py-2 rounded-full"
+                        {% if door_status == 'locked' %} disabled {% endif %}>
+                    Kunci Pintu
+                </button>
+            </form>
+        </div>
+        {% else %}
+        <!-- Access Denied for Guest -->
+        <div class="bg-yellow-500 text-white p-4 rounded-md mb-4">
+            <p>Access denied! You do not have permission to control the door. Please login as admin.</p>
+        </div>
+        {% endif %}
+
+        <!-- Security Card -->
+        <div class=" text-gray-100 p-6 rounded-lg ">
+            <h3 class="text-xl font-semibold text-gray-100">🛡️ Keamanan</h3>
+            <p>Percobaan gagal hari ini: <span class="text-red-500">{{ failed_attempts }}X</span></p>
+            <p>Terakhir terdeteksi:
+                <span class="text-blue-500">
+                    {% if last_failed_time %}
+                        {{ last_failed_time.strftime('%H:%M WIB') }}
+                    {% else %}
+                        Tidak ada percobaan gagal
+                    {% endif %}
+                </span>
+            </p>
+        </div>
+
+        <!-- Environment Card -->
+        <div class=" text-gray-100 p-6 rounded-lg ">
+            <h3 class="text-xl font-semibold text-gray-100 dark:text-white mb-4">🌡️ Sensor</h3>
+            {% if latest_sensor_data %}
+                <p>Suhu: <span class="text-blue-500">{{ latest_sensor_data['temperature'] }}°C</span></p>
+                <p>Kelembaban: <span class="text-blue-500">{{ latest_sensor_data['humidity'] }}%</span></p>
+            {% else %}
+                <p>No data available</p>
+            {% endif %}
+            <p>Pencahayaan: <span class="text-blue-500">{{ light_status }} (Lux: {{ lux_data['lux'] if lux_data else 'N/A' }})</span></p>
+        </div>
+    </div>
+
+    <!-- Temperature Chart -->
+    <div class=" text-gray-100 p-6 rounded-lg  mb-12">
+        <h3 class="text-xl font-semibold text-gray-100 dark:text-white mb-4">📊 Grafik Suhu & Kelembaban</h3>
+        <canvas id="temperatureChart"
+        data-temperature='{{ temperature_data | tojson }}'
+        data-humidity='{{ humidity_data | tojson }}'
+        data-labels='{{ timestamps | tojson }}'
+        width="600" height="300">
+        </canvas>
+    </div>
+
+    <!-- Recent Activity Table -->
+    <div class=" text-gray-100 p-6 rounded-lg  mb-12">
+        <h3 class="text-xl font-semibold text-gray-100 dark:text-white mb-4">📅 Aktivitas Terbaru</h3>
+        <table class="min-w-full table-auto">
+            <thead>
+                <tr>
+                    <th class="px-4 py-2 text-left text-white">Waktu</th>
+                    <th class="px-4 py-2 text-left text-white">User</th>
+                    <th class="px-4 py-2 text-left text-white">Metode</th>
+                    <th class="px-4 py-2 text-left text-white">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for activity in recent_activity %}
+                    <tr class="">
+                        <td class="px-4 py-2 text-white">{{ activity.access_time.strftime('%d-%m-%Y %H:%M WIB') }}</td>
+                        <td class="px-4 py-2 text-white">{{ activity.username }}</td>
+                        <td class="px-4 py-2 text-white">{{ activity.access_type }}</td>
+                        <td class="px-4 py-2 text-white {% if activity.status == 'success' %} text-green-500 {% else %} text-red-500 {% endif %}">
+                            {% if activity.status == 'success' %} ✅ Berhasil {% else %} ❌ Gagal {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Notifications -->
+    {% for notif in notifications %}
+        <div class="bg-yellow-100 dark:bg-yellow-500 text-yellow-800 dark:text-yellow-800 p-4 rounded-lg mb-4">
+            {{ notif.message }}
+        </div>
+    {% endfor %}
+</div>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

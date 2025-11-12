@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="card p-6 shadow-lg rounded-xl">
+  <h2 class="font-semibold text-2xl text-white mb-4">Reset PIN</h2>
+
+  {% if message %}
+    <div class="bg-red-500 text-white p-4 rounded-md mb-4">
+      {{ message }}
+    </div>
+  {% endif %}
+  
+  {% if user_role != 'admin' %}
+    <div class="bg-gray-700 text-white p-4 rounded-md mb-4">
+      <p class="text-center">You do not have permission to reset the PIN. <a href="{{ url_for('login') }}" class="text-blue-400 hover:text-blue-600">Click here to login</a></p>
+    </div>
+  {% else %}
+    <!-- Formulir untuk Reset PIN -->
+    <form method="POST" action="{{ url_for('reset_pin') }}">
+      <div>
+        <label for="new_pin" class="block text-sm font-semibold text-white">New PIN:</label>
+        <input type="password" name="new_pin" class="w-full p-2 rounded bg-gray-700" required>
+      </div>
+
+      <div class="mt-4">
+        <button type="submit" class="w-full bg-red-500 text-white py-2 rounded-md hover:bg-red-600">Reset PIN</button>
+      </div>
+    </form>
+  {% endif %}
+</div>
+{% endblock %}
